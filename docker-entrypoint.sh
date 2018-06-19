@@ -52,7 +52,7 @@ echo ""
 
 chown -R www-data:www-data /var/www/wp/wp-content/
 
-echo -n "Configuring.. "
+echo -n "Configuring wordpress.. "
 DB_NAME=$(if [[ ! -z "${DB_NAME}" ]]; then echo "${DB_NAME}"; else echo "wordpress"; fi)
 DB_USER=$(if [[ ! -z "${DB_USER}" ]]; then echo "${DB_USER}"; else echo "root"; fi)
 DB_PASSWORD=$(if [[ ! -z "${DB_PASSWORD}" ]]; then echo "${DB_PASSWORD}"; else echo "root-password"; fi)
@@ -88,6 +88,27 @@ EOF
 
 echo "OK"
 
+echo -n "Configuring mail sender.. "
+HOSTNAME=$(hostname)
+
+set +e
+grep new_mail_from /var/www/wp/wp-includes/functions.php > /dev/null;
+if [ $? -ne 0 ]; then
+
+cat <<EOF >> /var/www/wp/wp-includes/functions.php
+
+function new_mail_from($old) {
+    return "wordpress@$HOSTNAME";
+}
+add_filter('wp_mail_from', 'new_mail_from');
+
+EOF
+else
+    sed -e "s/return \"wordpress@.*/return \"wordpress@$DOMAIN\";/g" var/www/wp/wp-includes/functions.php
+fi
+set -e
+
+echo "OK"
 
 /usr/sbin/php-fpm7
 

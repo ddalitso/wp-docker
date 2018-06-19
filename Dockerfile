@@ -5,7 +5,7 @@ LABEL maintainer="Dalitso / Ville Nupponen <docker@dalitso.fi>"
 ENV WP_VERSION 4.9.6
 
 RUN apk update \
-	&& apk add bash php7 php7-fpm php7-mysqli
+	&& apk add bash php7 php7-fpm php7-mysqli exim
 
 RUN addgroup -S www-data \
 	&& adduser -SDh /var/www www-data www-data \
