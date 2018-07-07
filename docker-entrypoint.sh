@@ -104,11 +104,23 @@ add_filter('wp_mail_from', 'new_mail_from');
 
 EOF
 else
-    sed -e "s/return \"wordpress@.*/return \"wordpress@$DOMAIN\";/g" var/www/wp/wp-includes/functions.php
+    sed -i -e "s/return \"wordpress@.*/return \"wordpress@$DOMAIN\";/g" var/www/wp/wp-includes/functions.php
 fi
 set -e
 
 echo "OK"
+echo ""
+
+echo -n "Configure upload max filesize.. "
+
+MAX_FILESIZE=$(if [[ ! -z "${MAX_FILESIZE}" ]]; then echo "${MAX_FILESIZE}"; else echo "2M"; fi)
+
+sed -i -e "s/.*client_max_body_size.*/    client_max_body_size $MAX_FILESIZE;/g" /etc/nginx/conf.d/default.conf
+sed -i -e "s/.*upload_max_filesize.*/upload_max_filesize = $MAX_FILESIZE/g" /etc/php7/php.ini
+sed -i -e "s/.*post_max_size.*/post_max_size = $MAX_FILESIZE/g" /etc/php7/php.ini
+
+echo "OK"
+echo ""
 
 /usr/sbin/php-fpm7
 
