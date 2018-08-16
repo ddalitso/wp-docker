@@ -2,7 +2,7 @@ FROM nginx:alpine
 
 LABEL maintainer="Dalitso / Ville Nupponen <docker@dalitso.fi>"
 
-ENV WP_VERSION 4.9.7
+ENV WP_VERSION 4.9.8
 
 RUN apk update \
 	&& apk add bash php7 php7-fpm php7-mysqli exim
